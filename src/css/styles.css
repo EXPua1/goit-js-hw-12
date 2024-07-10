@@ -23,3 +23,47 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+.search input:hover {
+  color: blue;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 55px;
+  margin-top: 55px;
+}
+.search input {
+  height: 40px;
+  width: 272px;
+}
+.search button {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #4e75ff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  border-color: transparent;
+  height: auto;
+}
+.gallery {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.gallery a {
+  flex: 0 0 calc((100% - 48px) / 3); /* Рассчитываем ширину элемента, учитывая отступы между ними */
+  max-width: 360px; /* Ограничиваем максимальную ширину элемента */
+  margin-bottom: 24px;
+}
+
+.gallery img {
+  width: 360px;
+  height: auto;
+}
