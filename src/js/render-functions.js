@@ -12,29 +12,37 @@ let lightbox = new SimpleLightbox('.gallery a', {
 
 export default function createGallery(imagesData) {
   const gallery = document.querySelector('.gallery');
-  gallery.innerHTML = '';
 
-  // Создание HTML строк для всех изображений
-  const galleryHTML = imagesData
-    .map(
-      image => `
-    <div class="card">
-      <a href="${image.largeImageURL}" title="${image.tags}">
-        <img src="${image.webformatURL}" alt="${image.tags}">
-      </a>
-      <div class="card-info">
-        <p>Likes ${image.likes}</p>
-        <p>Views ${image.views}</p>
-        <p>Comments ${image.comments}</p>
-        <p>Downloads ${image.downloads}</p>
-      </div>
-    </div>
-  `
-    )
-    .join('');
+  // Loop through each image data and create corresponding HTML elements
+  imagesData.forEach(image => {
+    const card = document.createElement('div');
+    card.classList.add('card');
 
-  gallery.insertAdjacentHTML('beforeend', galleryHTML);
+    const link = document.createElement('a');
+    link.href = image.largeImageURL;
+    link.title = image.tags;
 
-  // Обновление lightbox после добавления новых элементов
+    const img = document.createElement('img');
+    img.src = image.webformatURL;
+    img.alt = image.tags;
+
+    link.appendChild(img);
+
+    const cardInfo = document.createElement('div');
+    cardInfo.classList.add('card-info');
+    cardInfo.innerHTML = `
+      <p>Likes ${image.likes}</p>
+      <p>Views ${image.views}</p>
+      <p>Comments ${image.comments}</p>
+      <p>Downloads ${image.downloads}</p>
+    `;
+
+    card.appendChild(link);
+    card.appendChild(cardInfo);
+
+    gallery.appendChild(card);
+  });
+
+  // Update lightbox after adding new elements
   lightbox.refresh();
 }

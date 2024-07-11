@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vanilla App Template</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vanilla App Template</title>
-  <link rel="stylesheet" href="./css/styles.css" />
-</head>
+  <body>
+    <div class="search">
+      <form id="searchForm">
+        <input type="text" id="searchInput" placeholder="Search images..." />
+        <button type="submit">Search</button>
+      </form>
+    </div>
 
-<body>
-  <div class="search">
-    <input type="text" placeholder="Search images..." />
-    <button>Search</button>
-  </div>
+    <div class="gallery"></div>
+    <div class="btn_fetch" id="button-container"></div>
 
-  <div class="gallery"></div>
-
-  <script type="module" src="./main.js"></script>
-</body>
-
+    <script type="module" src="./main.js"></script>
+  </body>
 </html>
