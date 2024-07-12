@@ -52,3 +52,11 @@ export function scrollToNewImages() {
     });
   }
 }
+
+export function showErrorToast(message = 'An unexpected error occurred.') {
+  iziToast.error({
+    title: 'Error',
+    message: message,
+    position: 'topRight',
+  });
+}

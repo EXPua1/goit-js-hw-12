@@ -7,6 +7,7 @@ import {
   removeLoader,
   scrollToNewImages,
   endCollection,
+  showErrorToast,
 } from './js/functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
@@ -128,14 +129,6 @@ async function fetchPosts() {
     removeLoader();
     isSearching = false;
   }
-}
-
-function showErrorToast(message = 'An unexpected error occurred.') {
-  iziToast.error({
-    title: 'Error',
-    message: message,
-    position: 'topRight',
-  });
 }
 
 document.addEventListener('touchstart', function () {}, { passive: true });
