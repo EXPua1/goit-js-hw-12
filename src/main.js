@@ -8,6 +8,7 @@ import {
   scrollToNewImages,
   endCollection,
   showErrorToast,
+  errorMessage,
 } from './js/functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
@@ -49,7 +50,7 @@ async function searchImages() {
     totalHits = response.data.totalHits;
     if (response.data.hits.length === 0) {
       removeFetchButton();
-      showErrorToast('No images found.');
+      errorMessage();
 
       input.value = ''; // Clear input field on no results
       return;
@@ -65,7 +66,7 @@ async function searchImages() {
     }
   } catch (error) {
     console.error('Error during the search request:', error);
-    showErrorToast('An error occurred during the search.');
+    errorMessage('An error occurred during the search.');
   } finally {
     removeLoader();
     isSearching = false;
