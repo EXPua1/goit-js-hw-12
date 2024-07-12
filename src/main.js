@@ -7,35 +7,38 @@ import {
   addLoader,
   removeLoader,
   scrollToNewImages,
+  endCollection,
 } from './js/functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
-const searchBtn = document.querySelector('.search button');
+const searchForm = document.getElementById('searchForm');
 const input = document.querySelector('.search input');
 const gallery = document.querySelector('.gallery');
-const searchForm = document.getElementById('searchForm');
-const buttonContainer = document.getElementById('button-container'); // Новий контейнер для кнопки
+const buttonContainer = document.getElementById('button-container');
 
 let currentQuery = '';
-let isSearching = false; // Flag to track the state of the request
+let isSearching = false;
 let page = 1;
 const perPage = 15;
+let totalHits = 0;
+let hasMoreImages = true;
 
 searchForm.addEventListener('submit', event => {
-  event.preventDefault(); // Prevent the default form submission behavior
+  event.preventDefault();
 
   if (isSearching) {
-    return; // If a request is already in progress, exit the function
+    return;
   }
   if (input.value.trim() === '') {
     infoMessage();
     return;
   }
-  isSearching = true; // Set the flag indicating a request is in progress
-  page = 1; // Reset the page number to 1 for a new search
+  isSearching = true;
+  page = 1;
   currentQuery = input.value.trim();
-  gallery.innerHTML = ''; // Clear the gallery for a new search
+  gallery.innerHTML = '';
+  hasMoreImages = true;
   searchImages();
 });
 
@@ -43,46 +46,53 @@ async function searchImages() {
   try {
     addLoader();
     const response = await searchImage(currentQuery, page, perPage);
+    totalHits = response.data.totalHits;
     if (response.data.hits.length === 0) {
       errorMessage();
-      gallery.innerHTML = '';
+      removeFetchButton(); // Hide fetch button when no images are found
+      return;
     } else {
       createGallery(response.data.hits);
-      input.value = ''; // Clear the input field after a successful search
-      if (response.data.hits.length === perPage) {
-        addFetchButton();
-      }
-      if (response.data.totalHits <= page * perPage) {
+      checkAndDisplayFetchButton(response.data.hits.length);
+      if (totalHits <= page * perPage) {
         removeFetchButton();
         setTimeout(() => {
           endCollection();
-        }, 500); // Delay of 500 milliseconds
+        }, 500);
       }
     }
   } catch (error) {
     console.error('Error during the search request:', error);
-    iziToast.error({
-      title: 'Error',
-      message: 'An error occurred during the search. Please try again later.',
-      position: 'topRight',
-    });
+    showErrorToast(
+      'An error occurred during the search. Please try again later.'
+    );
   } finally {
-    removeLoader(); // Remove the loader after the request completes or an error occurs
-    isSearching = false; // Reset the request flag
+    removeLoader();
+    isSearching = false;
+  }
+}
+
+function checkAndDisplayFetchButton(currentBatchLength) {
+  if (currentBatchLength < perPage) {
+    hasMoreImages = false;
+  }
+  if (hasMoreImages) {
+    addFetchButton();
   }
 }
 
 function addFetchButton() {
-  removeFetchButton(); // Remove any existing fetch button if present
-  const fetchButton = document.createElement('button');
-  fetchButton.id = 'fetchButton'; // Add an id to the fetch button
-  fetchButton.textContent = 'Load More Images';
-  fetchButton.addEventListener('click', fetchPosts);
-  buttonContainer.appendChild(fetchButton); // Додайте кнопку в новий контейнер
+  if (!document.getElementById('fetchButton')) {
+    const fetchButton = document.createElement('button');
+    fetchButton.id = 'fetchButton';
+    fetchButton.textContent = 'Load More Images';
+    fetchButton.addEventListener('click', fetchPosts);
+    buttonContainer.appendChild(fetchButton);
+  }
 }
 
 function removeFetchButton() {
-  const fetchButton = buttonContainer.querySelector('#fetchButton');
+  const fetchButton = document.getElementById('fetchButton');
   if (fetchButton) {
     fetchButton.remove();
   }
@@ -90,43 +100,46 @@ function removeFetchButton() {
 
 async function fetchPosts() {
   if (isSearching) {
-    return; // If a request is already in progress, exit the function
+    return;
   }
-  isSearching = true; // Set the flag indicating a request is in progress
-  page += 1; // Increment the page number for the next request
+  isSearching = true;
+  page += 1;
 
   try {
     addLoader();
     const response = await searchImage(currentQuery, page, perPage);
     if (response.data.hits.length === 0) {
-      iziToast.alert({
-        title: 'Error',
-        message: 'No more images found.',
-        position: 'topRight',
-      });
+      showErrorToast('No more images found.');
+      hasMoreImages = false;
     } else {
       createGallery(response.data.hits);
-      if (response.data.hits.length === perPage) {
-        addFetchButton();
-      }
-      if (response.data.totalHits <= page * perPage) {
+      checkAndDisplayFetchButton(response.data.hits.length);
+      if (totalHits <= page * perPage) {
         removeFetchButton();
         setTimeout(() => {
           endCollection();
-        }, 500); // Delay of 500 milliseconds
+        }, 500);
       }
-      // Scroll the page down after adding new images
       scrollToNewImages();
     }
   } catch (error) {
     console.error('Error during the search request:', error);
-    iziToast.error({
-      title: 'Error',
-      message: 'An error occurred during the search. Please try again later.',
-      position: 'topRight',
-    });
+    showErrorToast(
+      'An error occurred during the search. Please try again later.'
+    );
   } finally {
-    removeLoader(); // Remove the loader after the request completes or an error occurs
-    isSearching = false; // Reset the request flag
+    removeLoader();
+    isSearching = false;
   }
 }
+
+function showErrorToast(message = 'An unexpected error occurred.') {
+  iziToast.error({
+    title: 'Error',
+    message: message,
+    position: 'topRight',
+  });
+}
+
+document.addEventListener('touchstart', function () {}, { passive: true });
+document.addEventListener('touchmove', function () {}, { passive: true });
