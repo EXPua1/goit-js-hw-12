@@ -2,7 +2,6 @@ import searchImage from './js/pixabay-api';
 import createGallery from './js/render-functions';
 
 import {
-  errorMessage,
   infoMessage,
   addLoader,
   removeLoader,
@@ -48,8 +47,10 @@ async function searchImages() {
     const response = await searchImage(currentQuery, page, perPage);
     totalHits = response.data.totalHits;
     if (response.data.hits.length === 0) {
-      errorMessage();
-      removeFetchButton(); // Hide fetch button when no images are found
+      removeFetchButton();
+      showErrorToast('No images found.');
+
+      input.value = ''; // Clear input field on no results
       return;
     } else {
       createGallery(response.data.hits);
@@ -63,9 +64,7 @@ async function searchImages() {
     }
   } catch (error) {
     console.error('Error during the search request:', error);
-    showErrorToast(
-      'An error occurred during the search. Please try again later.'
-    );
+    showErrorToast('An error occurred during the search.');
   } finally {
     removeLoader();
     isSearching = false;
@@ -124,9 +123,7 @@ async function fetchPosts() {
     }
   } catch (error) {
     console.error('Error during the search request:', error);
-    showErrorToast(
-      'An error occurred during the search. Please try again later.'
-    );
+    showErrorToast('An error occurred during the search.');
   } finally {
     removeLoader();
     isSearching = false;
